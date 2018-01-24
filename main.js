@@ -9,7 +9,7 @@ const HTTP = axios.create({
     baseURL: 'http://srh.bankofchina.com/search/whpj',
     params: {},
     data: {},
-    transformRequest: [function (data) {
+    transformRequest: [(data) => {
         // Do whatever you want to transform the data
         let ret = ''
         for (let it in data) {
@@ -20,12 +20,12 @@ const HTTP = axios.create({
 });
  
 // 添加请求拦截器
-HTTP.interceptors.request.use(function (config) {
+HTTP.interceptors.request.use((config) => {
     if(config.method.toLocaleLowerCase() === 'post'){
         config.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
     }
     return config;
-}, function (error) {
+}, (error) => {
     return Promise.reject(error);
 });
 
