@@ -1,51 +1,10 @@
 const http = require('http');
 const fs = require('fs');
 const cheerio = require('cheerio');
-const querystring = require('querystring');
 const moment = require('moment');
 const axios = require('axios');
 
-
-
-const postData = querystring.stringify({
-  'erectDate' : moment().format('YYYY-MM-DD'),
-  'nothing' : moment().format('YYYY-MM-DD'),
-  'pjname' : '1316'
-});
-
-
-// const req = http.request({
-// 	method: "POST",  
-//     host: "srh.bankofchina.com",  
-//     path: "/search/whpj/search.jsp",  
-// } ,(res) => {
-// 	//console.log(res);
-// 	res.setEncoding('utf-8'); //防止中文乱码
-// 	//用来存储请求网页的整个html内容
-// 	var html = '';        
-// 	//监听data事件，每次取一块数据
-// 	res.on('data', (chunk) => {   
-// 	    html += chunk;
-// 	});
-// 	//监听end事件，如果整个网页内容的html都获取完毕，就执行回调函数
-// 	res.on('end' , () => {
-
-// 		//采用cheerio模块解析html
-// 		var $ = cheerio.load(html); 
-
-// 		var table = $('.BOC_main');
-
-// 		fs.writeFile('age.xml' ,table.html(),(err)=>{
-// 			if (!err) {
-// 		        console.log('抓取成功');
-// 		    }
-// 		});
-// 	})
-// });
-
-// req.write(postData);
-// req.end();
-
+//创建一个axios实例， 解析post请求和参数编码
 const HTTP = axios.create({
     baseURL: 'http://srh.bankofchina.com/search/whpj',
     params: {},
@@ -65,28 +24,66 @@ HTTP.interceptors.request.use(function (config) {
     if(config.method.toLocaleLowerCase() === 'post'){
         config.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
     }
-    // 在发送请求之前做些什么
     return config;
 }, function (error) {
-    // 对请求错误做些什么
     return Promise.reject(error);
 });
 
+// 1315 --- 港币
+// 1316 --- 美元
+// 1317 --- 瑞士法郎
+// 1318 --- 德国马克
+// 1319 --- 法国法郎
+// 1375 --- 新加坡元
+// 1320 --- 瑞典克朗
+// 1321 --- 丹麦克朗
+// 1322 --- 挪威克朗
+// 1323 --- 日元
+// 1324 --- 加拿大元
+// 1325 --- 澳大利亚元
+// 1326 --- 欧元
+// 1327 --- 澳门元
+// 1328 --- 菲律宾比索
+// 1329 --- 泰国铢
+// 1330 --- 新西兰元
+// 1331 --- 韩元
+// 1843 --- 卢布
+// 2890 --- 林吉特
+// 2895 --- 新台币
+// 1370 --- 西班牙比塞塔
+// 1371 --- 意大利里拉
+// 1372 --- 荷兰盾
+// 1373 --- 比利时法郎
+// 1374 --- 芬兰马克
+// 3030 --- 印尼卢比
+// 3253 --- 巴西里亚尔
+// 3899 --- 阿联酋迪拉姆
+// 3900 --- 印度卢比
+// 3901 --- 南非兰特
+// 4418 --- 沙特里亚尔
+// 4560 --- 土耳其里拉
+
+//发送请求
 HTTP.post('/search.jsp' ,{
+    //起始时间
 	'erectDate' : moment().format('YYYY-MM-DD'),
+    //结束时间
 	'nothing' 	: moment().format('YYYY-MM-DD'),
-	'pjname' 	: '1316'
+    //牌价选择
+	'pjname' 	: '1316',
+    //爬取第几页
+    'page'      : 1
 }).then((res)=>{
 		//采用cheerio模块解析html
 		var $ = cheerio.load(res.data); 
-
-		var table = $('.BOC_main');
-
-		fs.writeFile('age.xml' ,table.html(),(err)=>{
+        //找到页面table元素
+		var table = $('.BOC_main').find('table');
+        //将整个table的tbody写入到文件
+		fs.writeFile('forex.xml' ,table.html(),(err)=>{
 			if (!err) {
 		        console.log('抓取成功');
 		    }
 		});
 }).catch((err)=>{
-	console.log(err);
+	console.log('抓取失败！！！');
 });
