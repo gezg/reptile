@@ -66,24 +66,24 @@ HTTP.interceptors.request.use((config) => {
 //发送请求
 HTTP.post('/search.jsp' ,{
     //起始时间
-	'erectDate' : moment().format('YYYY-MM-DD'),
+    'erectDate' : moment().format('YYYY-MM-DD'),
     //结束时间
-	'nothing' 	: moment().format('YYYY-MM-DD'),
+    'nothing' 	: moment().format('YYYY-MM-DD'),
     //牌价选择
-	'pjname' 	: '1316',
+    'pjname' 	: '1316',
     //爬取第几页
     'page'      : 1
 }).then((res)=>{
-		//采用cheerio模块解析html
-		var $ = cheerio.load(res.data); 
+        //采用cheerio模块解析html
+        var $ = cheerio.load(res.data); 
         //找到页面table元素
-		var table = $('.BOC_main').find('table');
+        var table = $('.BOC_main').find('table');
         //将整个table的tbody写入到文件
-		fs.writeFile('forex.xml' ,table.html(),(err)=>{
-			if (!err) {
-		        console.log('抓取成功');
-		    }
-		});
+        fs.writeFile('forex.xml' ,table.html(),(err)=>{
+            if (!err) {
+                console.log('抓取成功');
+            }
+        });
 }).catch((err)=>{
-	console.log('抓取失败！！！');
+    console.log('抓取失败！！！');
 });
